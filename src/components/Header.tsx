@@ -1,5 +1,5 @@
 import React from 'react';
-import { Code2, Sparkles, History, Layers } from 'lucide-react';
+import { Sparkles, History, Layers } from 'lucide-react';
 
 interface HeaderProps {
   onOpenHistory: () => void;
@@ -13,9 +13,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenHistory, historyCount }) =
         
         {/* Logo & Brand */}
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-lg bg-purple-900/60 border border-purple-700/50 flex items-center justify-center text-purple-300">
-            <Code2 className="w-6 h-6 text-purple-400" />
-          </div>
+          <img 
+            src="https://i.ibb.co/bM0mJSnb/large.jpg" 
+            alt="MaxSource Logo" 
+            className="w-10 h-10 rounded-lg object-cover border border-purple-700/50 shadow-md"
+          />
           <div>
             <div className="flex items-center space-x-2">
               <h1 className="text-lg font-bold text-white tracking-wide">MaxSource</h1>

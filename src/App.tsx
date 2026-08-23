@@ -100,12 +100,6 @@ export default function App() {
         {/* Video Banner (Persegi Panjang Tengah) */}
         <div className="max-w-4xl mx-auto">
           <div className="bg-zinc-950 border-2 border-purple-800 rounded-xl overflow-hidden shadow-2xl">
-            <div className="px-4 py-2 bg-zinc-950 border-b border-purple-900/40 flex items-center justify-between text-xs text-purple-300">
-              <span className="font-semibold flex items-center space-x-1.5">
-                <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-                <span>Panduan / Video Demonstrasi</span>
-              </span>
-            </div>
             <div className="relative w-full aspect-video bg-black flex items-center justify-center">
               <video 
                 src="https://www.image2url.com/r2/default/videos/1787455970497-964d06d4-be6d-4657-9de1-474f22d8272f.mp4" 
