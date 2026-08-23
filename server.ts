@@ -2,7 +2,6 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import * as cheerio from 'cheerio';
-import { GoogleGenAI, Type } from '@google/genai';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -329,89 +328,6 @@ app.post('/api/extract', async (req, res) => {
   }
 });
 
-// API Gemini Code Analysis
-app.post('/api/gemini/analyze', async (req, res) => {
-  try {
-    const { url, title, html, css, js, stats } = req.body;
-
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return res.status(500).json({ error: 'GEMINI_API_KEY belum dikonfigurasi.' });
-    }
-
-    const ai = new GoogleGenAI({
-      apiKey,
-      httpOptions: {
-        headers: {
-          'User-Agent': 'aistudio-build'
-        }
-      }
-    });
-
-    const prompt = `Analisis source code website berikut ini dan berikan ringkasan terstruktur dalam BAHASA INDONESIA:
-
-Website URL: ${url}
-Judul: ${title}
-Jumlah Elemen DOM: ${stats?.domElementsCount || 'N/A'}
-Jumlah Stylesheet: ${stats?.externalStyleCount || '0'}
-Jumlah Script: ${stats?.externalScriptCount || '0'}
-
-Potongan HTML (maksimal 3000 karakter):
-\`\`\`html
-${(html || '').substring(0, 3000)}
-\`\`\`
-
-Potongan CSS (maksimal 1500 karakter):
-\`\`\`css
-${(css || '').substring(0, 1500)}
-\`\`\`
-
-Potongan JS (maksimal 1500 karakter):
-\`\`\`javascript
-${(js || '').substring(0, 1500)}
-\`\`\`
-
-Harap berikan output JSON dengan format berikut:
-{
-  "summary": "Penjelasan singkat tentang tujuan website dan struktur utamanya",
-  "techStack": ["Daftar framework/library yang terdeteksi, seperti React, Tailwind, jQuery, Bootstrap, WordPress, dll"],
-  "structureBreakdown": ["Poin-poin penting struktur halaman (header, hero section, navigation, form, footer, dll)"],
-  "recommendations": ["Rekomendasi optimasi atau perbaikan kode HTML/CSS/JS"],
-  "securityNote": "Catatan singkat mengenai keamanan (misal: script eksternal, inline script, dsb)"
-}`;
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.6-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            summary: { type: Type.STRING },
-            techStack: { type: Type.ARRAY, items: { type: Type.STRING } },
-            structureBreakdown: { type: Type.ARRAY, items: { type: Type.STRING } },
-            recommendations: { type: Type.ARRAY, items: { type: Type.STRING } },
-            securityNote: { type: Type.STRING }
-          },
-          required: ['summary', 'techStack', 'structureBreakdown', 'recommendations']
-        }
-      }
-    });
-
-    if (response.text) {
-      const result = JSON.parse(response.text);
-      return res.json(result);
-    } else {
-      return res.status(500).json({ error: 'Gagal mendapatkan analisis dari Gemini AI.' });
-    }
-
-  } catch (err: any) {
-    console.error('Gemini error:', err);
-    res.status(500).json({ error: err.message || 'Gagal menganalisis kode dengan AI.' });
-  }
-});
-
 // Setup Vite Development or Production Server
 async function setupServer() {
   if (process.env.NODE_ENV !== 'production') {
@@ -430,7 +346,7 @@ async function setupServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Server WebToCode berjalan pada http://localhost:${PORT}`);
+    console.log(`🚀 Server MaxSource berjalan pada http://localhost:${PORT}`);
   });
 }
 

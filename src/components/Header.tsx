@@ -18,12 +18,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenHistory, historyCount }) =
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h1 className="text-lg font-bold text-white tracking-wide">WebToCode</h1>
+              <h1 className="text-lg font-bold text-white tracking-wide">MaxSource</h1>
               <span className="text-xs px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800/80 font-mono">
-                v2.0
+                v24.04
               </span>
             </div>
-            <p className="text-xs text-zinc-400">Website URL to Source Code Extractor (HTML, CSS, JS)</p>
           </div>
         </div>
 

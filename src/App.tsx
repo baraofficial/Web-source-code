@@ -20,7 +20,7 @@ export default function App() {
   // Load history from localStorage on mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('webtocode_history');
+      const saved = localStorage.getItem('maxsource_history');
       if (saved) {
         setHistory(JSON.parse(saved));
       }
@@ -35,7 +35,7 @@ export default function App() {
       const filtered = prev.filter(h => h.url !== item.url);
       const updated = [item, ...filtered].slice(0, 15); // keep max 15
       try {
-        localStorage.setItem('webtocode_history', JSON.stringify(updated));
+        localStorage.setItem('maxsource_history', JSON.stringify(updated));
       } catch (e) {
         console.error('Failed to save history:', e);
       }
@@ -45,7 +45,7 @@ export default function App() {
 
   const clearHistory = () => {
     setHistory([]);
-    localStorage.removeItem('webtocode_history');
+    localStorage.removeItem('maxsource_history');
   };
 
   // Main Extraction Handler
@@ -97,20 +97,27 @@ export default function App() {
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
-        {/* Hero Banner Section */}
-        <div className="text-center max-w-3xl mx-auto space-y-3 py-4">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-purple-950 border border-purple-800/80 text-xs text-purple-300 font-medium">
-            <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-            <span>Ekstraktor Source Code Web Serbaguna</span>
+        {/* Video Banner (Persegi Panjang Tengah) */}
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-zinc-950 border-2 border-purple-800 rounded-xl overflow-hidden shadow-2xl">
+            <div className="px-4 py-2 bg-zinc-950 border-b border-purple-900/40 flex items-center justify-between text-xs text-purple-300">
+              <span className="font-semibold flex items-center space-x-1.5">
+                <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+                <span>Panduan / Video Demonstrasi</span>
+              </span>
+            </div>
+            <div className="relative w-full aspect-video bg-black flex items-center justify-center">
+              <video 
+                src="https://www.image2url.com/r2/default/videos/1786975874228-8be20130-16b0-47d0-bfd1-58053258cf5d.mp4" 
+                controls 
+                autoPlay 
+                muted 
+                loop 
+                playsInline 
+                className="w-full h-full object-contain"
+              />
+            </div>
           </div>
-
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Ubah Link Website Jadi <span className="text-purple-400">HTML, CSS, dan JS</span>
-          </h2>
-
-          <p className="text-sm text-zinc-400 leading-relaxed">
-            Masukkan URL website publik mana pun untuk mengisolasi dan mendownload source code HTML, Stylesheet CSS, Script JavaScript, asset gambar, serta analisis struktur DOM dengan Gemini AI.
-          </p>
         </div>
 
         {/* Input Form Component */}
@@ -151,7 +158,7 @@ export default function App() {
 
         {/* Default Empty State / Features Section (Shown when no source code active) */}
         {!extractedSource && !isLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-6 border-t border-purple-900/30">
+          <div className="grid grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto gap-5 pt-6 border-t border-purple-900/30">
             
             <div className="p-5 bg-zinc-900 border border-purple-900/30 rounded-xl space-y-2">
               <div className="p-2.5 w-10 h-10 bg-purple-950 text-purple-400 border border-purple-800/60 rounded-lg flex items-center justify-center">
@@ -173,16 +180,6 @@ export default function App() {
               </p>
             </div>
 
-            <div className="p-5 bg-zinc-900 border border-purple-900/30 rounded-xl space-y-2">
-              <div className="p-2.5 w-10 h-10 bg-purple-950 text-purple-400 border border-purple-800/60 rounded-lg flex items-center justify-center">
-                <Cpu className="w-5 h-5" />
-              </div>
-              <h3 className="text-sm font-bold text-white">Analisis Gemini AI</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                Gunakan Gemini AI untuk mendeteksi Framework, Library, rekomendasi optimasi, dan pemahaman struktur website dengan mudah.
-              </p>
-            </div>
-
           </div>
         )}
 
@@ -201,16 +198,9 @@ export default function App() {
       <footer className="border-t border-purple-900/30 bg-zinc-950 py-6 text-center text-xs text-zinc-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="flex items-center space-x-1">
-            <span className="font-semibold text-purple-400">WebToCode</span>
-            <span>&copy; {new Date().getFullYear()} - Ekstraktor Link ke Source Code</span>
+            <span className="font-semibold text-purple-400">MaxSource</span>
+            <span>&copy; 2026 Bara Official</span>
           </p>
-          <div className="flex items-center space-x-4 text-zinc-400">
-            <span>Tema Hitam & Ungu</span>
-            <span>•</span>
-            <span>Tanpa Efek Glow</span>
-            <span>•</span>
-            <span>Gemini AI Ready</span>
-          </div>
         </div>
       </footer>
 

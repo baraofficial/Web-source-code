@@ -1,6 +1,8 @@
 {
-  "name": "WebToCode - Extractor Source Code Web",
+  "name": "MaxSource - Extractor Source Code Web",
   "description": "Aplikasi pengubah link website menjadi source code HTML, CSS, dan JS dengan tema hitam dan ungu.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

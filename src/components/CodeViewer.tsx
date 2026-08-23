@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
 import { ExtractedSource } from '../types';
 import { 
-  FileCode, Palette, FileText, Image, Eye, Bot, Copy, Download, 
+  FileCode, Palette, FileText, Image, Eye, Copy, Download, 
   Check, Search, WrapText, Archive, Info, Sparkles, Layers, RefreshCw
 } from 'lucide-react';
 import JSZip from 'jszip';
 import { LivePreview } from './LivePreview';
 import { AssetsList } from './AssetsList';
-import { AiAnalysisView } from './AiAnalysisView';
 
 interface CodeViewerProps {
   source: ExtractedSource;
 }
 
 export const CodeViewer: React.FC<CodeViewerProps> = ({ source }) => {
-  const [activeTab, setActiveTab] = useState<'html' | 'css' | 'js' | 'assets' | 'preview' | 'ai'>('html');
+  const [activeTab, setActiveTab] = useState<'html' | 'css' | 'js' | 'assets' | 'preview'>('html');
   const [selectedCssIndex, setSelectedCssIndex] = useState<number>(-1); // -1 means Combined CSS
   const [selectedJsIndex, setSelectedJsIndex] = useState<number>(-1); // -1 means Combined JS
   
@@ -117,7 +116,7 @@ CSS Files      : ${source.stats.externalStyleCount}
 JS Files       : ${source.stats.externalScriptCount}
 Images Found   : ${source.stats.imageCount}
 
-Extracted by WebToCode App
+Extracted by MaxSource App
 `;
       zip.file('README.txt', metaInfo);
 
@@ -260,19 +259,6 @@ Extracted by WebToCode App
             <span>Live Render</span>
           </button>
 
-          {/* AI Analysis Tab */}
-          <button
-            onClick={() => setActiveTab('ai')}
-            className={`px-3 py-1.5 rounded-lg font-medium flex items-center space-x-1.5 transition-colors ${
-              activeTab === 'ai'
-                ? 'bg-purple-900 text-purple-100 border border-purple-700/60'
-                : 'text-purple-300 hover:text-purple-200 hover:bg-purple-950'
-            }`}
-          >
-            <Bot className="w-3.5 h-3.5 text-purple-400" />
-            <span>Analisis AI</span>
-          </button>
-
         </div>
 
         {/* Code Editor Toolbar Actions (Copy, Download, Wrap) */}
@@ -412,13 +398,6 @@ Extracted by WebToCode App
             js={source.combinedJs} 
             baseUrl={source.url} 
           />
-        </div>
-      )}
-
-      {/* AI Analysis View */}
-      {activeTab === 'ai' && (
-        <div className="p-4 bg-zinc-950">
-          <AiAnalysisView source={source} />
         </div>
       )}
 
