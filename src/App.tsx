@@ -108,7 +108,7 @@ export default function App() {
             </div>
             <div className="relative w-full aspect-video bg-black flex items-center justify-center">
               <video 
-                src="https://www.image2url.com/r2/default/videos/1786975874228-8be20130-16b0-47d0-bfd1-58053258cf5d.mp4" 
+                src="https://www.image2url.com/r2/default/videos/1787455970497-964d06d4-be6d-4657-9de1-474f22d8272f.mp4" 
                 controls 
                 autoPlay 
                 muted 

@@ -363,22 +363,17 @@ Extracted by MaxSource App
 
       {/* Code Editor View Container */}
       {['html', 'css', 'js'].includes(activeTab) && (
-        <div className="relative bg-zinc-950 text-zinc-100 font-mono text-xs overflow-auto h-[600px] flex">
-          
-          {/* Line Numbers */}
-          <div className="select-none py-4 px-3 bg-zinc-900/80 border-r border-purple-900/30 text-zinc-600 text-right min-w-[50px] font-mono text-[11px] leading-relaxed">
-            {lines.map((_, i) => (
-              <div key={i}>{i + 1}</div>
-            ))}
-          </div>
-
-          {/* Code Text Area */}
-          <div className="p-4 flex-1 overflow-x-auto leading-relaxed">
-            <pre className={`font-mono text-[12px] text-purple-100 ${isWordWrap ? 'whitespace-pre-wrap break-all' : 'whitespace-pre'}`}>
-              {currentCodeData.code}
-            </pre>
-          </div>
-
+        <div className="relative bg-zinc-950 font-mono text-[12px] overflow-auto h-[600px] py-4">
+          {lines.map((line, i) => (
+            <div key={i} className="flex">
+              <div className="select-none px-3 bg-zinc-900/80 border-r border-purple-900/30 text-zinc-600 text-right min-w-[50px] shrink-0 font-mono text-[11px] leading-relaxed">
+                {i + 1}
+              </div>
+              <div className={`px-4 flex-1 text-purple-100 leading-relaxed ${isWordWrap ? 'whitespace-pre-wrap break-all' : 'whitespace-pre'}`}>
+                {line || ' '}
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

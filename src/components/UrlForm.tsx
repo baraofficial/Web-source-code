@@ -77,7 +77,6 @@ export const UrlForm: React.FC<UrlFormProps> = ({ onExtract, isLoading }) => {
                 </>
               ) : (
                 <>
-                  <Search className="w-4 h-4" />
                   <span>Ubah ke Source Code</span>
                   <ArrowRight className="w-4 h-4 hidden sm:inline" />
                 </>
