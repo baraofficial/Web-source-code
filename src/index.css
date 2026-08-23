@@ -1,1 +1,82 @@
 @import "tailwindcss";
+
+/* Prism Code Syntax Highlighting Theme (Dark Pro) */
+.token.comment,
+.token.prolog,
+.token.cdata {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.token.doctype {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.token.punctuation {
+  color: #9ca3af;
+}
+
+.token.tag,
+.token.tag .token.punctuation {
+  color: #f59e0b;
+  font-weight: 500;
+}
+
+.token.tag .token.tag-id,
+.token.tag .token.class-name {
+  color: #fb923c;
+}
+
+.token.attr-name {
+  color: #38bdf8;
+}
+
+.token.attr-value,
+.token.attr-value .token.punctuation,
+.token.string,
+.token.char {
+  color: #4ade80;
+}
+
+.token.operator,
+.token.entity,
+.token.url {
+  color: #cbd5e1;
+}
+
+.token.keyword,
+.token.atrule {
+  color: #c084fc;
+  font-weight: 600;
+}
+
+.token.function {
+  color: #60a5fa;
+}
+
+.token.property,
+.token.selector {
+  color: #38bdf8;
+}
+
+.token.number,
+.token.boolean,
+.token.constant {
+  color: #f87171;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #f472b6;
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}

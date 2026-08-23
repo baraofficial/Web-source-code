@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ExtractedSource } from '../types';
 import { 
   FileCode, Palette, FileText, Image, Eye, Copy, Download, 
-  Check, Search, WrapText, Archive, Info, Sparkles, Layers, RefreshCw
+  Check, Search, WrapText, Archive, Sparkles, Wand2
 } from 'lucide-react';
 import JSZip from 'jszip';
 import { LivePreview } from './LivePreview';
 import { AssetsList } from './AssetsList';
+import { formatCode, highlightCode } from '../utils/codeFormatter';
 
 interface CodeViewerProps {
   source: ExtractedSource;
@@ -18,50 +19,59 @@ export const CodeViewer: React.FC<CodeViewerProps> = ({ source }) => {
   const [selectedJsIndex, setSelectedJsIndex] = useState<number>(-1); // -1 means Combined JS
   
   const [isCopied, setIsCopied] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [isWordWrap, setIsWordWrap] = useState(true);
+  const [isFormatted, setIsFormatted] = useState(true);
   const [isZipping, setIsZipping] = useState(false);
 
-  // Get currently active code text
-  const getActiveCode = (): { filename: string; code: string; type: string } => {
+  // Get currently active raw code
+  const currentCodeData = useMemo(() => {
     if (activeTab === 'html') {
-      return { filename: 'index.html', code: source.html, type: 'html' };
+      return { filename: 'index.html', code: source.html, type: 'html' as const };
     }
     
     if (activeTab === 'css') {
       if (selectedCssIndex === -1) {
-        return { filename: 'style.css', code: source.combinedCss, type: 'css' };
+        return { filename: 'style.css', code: source.combinedCss, type: 'css' as const };
       } else {
         const file = source.cssFiles[selectedCssIndex];
-        return { filename: file?.filename || 'style.css', code: file?.content || '', type: 'css' };
+        return { filename: file?.filename || 'style.css', code: file?.content || '', type: 'css' as const };
       }
     }
 
     if (activeTab === 'js') {
       if (selectedJsIndex === -1) {
-        return { filename: 'script.js', code: source.combinedJs, type: 'javascript' };
+        return { filename: 'script.js', code: source.combinedJs, type: 'javascript' as const };
       } else {
         const file = source.jsFiles[selectedJsIndex];
-        return { filename: file?.filename || 'script.js', code: file?.content || '', type: 'javascript' };
+        return { filename: file?.filename || 'script.js', code: file?.content || '', type: 'javascript' as const };
       }
     }
 
-    return { filename: '', code: '', type: '' };
-  };
+    return { filename: '', code: '', type: 'html' as const };
+  }, [activeTab, selectedCssIndex, selectedJsIndex, source]);
 
-  const currentCodeData = getActiveCode();
+  // Format code if enabled
+  const processedCode = useMemo(() => {
+    if (!currentCodeData.code) return '';
+    if (!isFormatted) return currentCodeData.code;
+    return formatCode(currentCodeData.code, currentCodeData.type);
+  }, [currentCodeData.code, currentCodeData.type, isFormatted]);
 
-  // Filter lines if search query present
-  const lines = currentCodeData.code.split('\n');
+  // Syntax highlight and split lines
+  const highlightedLines = useMemo(() => {
+    if (!processedCode) return [];
+    const highlighted = highlightCode(processedCode, currentCodeData.type);
+    return highlighted.split('\n');
+  }, [processedCode, currentCodeData.type]);
 
   const copyCode = () => {
-    navigator.clipboard.writeText(currentCodeData.code);
+    navigator.clipboard.writeText(processedCode);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
   };
 
   const downloadSingleFile = () => {
-    const blob = new Blob([currentCodeData.code], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([processedCode], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -78,20 +88,25 @@ export const CodeViewer: React.FC<CodeViewerProps> = ({ source }) => {
     try {
       const zip = new JSZip();
 
+      // Format HTML for clean download
+      const cleanHtml = formatCode(source.html, 'html');
+      const cleanCss = formatCode(source.combinedCss, 'css');
+      const cleanJs = formatCode(source.combinedJs, 'javascript');
+
       // index.html
-      zip.file('index.html', source.html);
+      zip.file('index.html', cleanHtml);
 
       // style.css
-      zip.file('style.css', source.combinedCss);
+      zip.file('style.css', cleanCss);
 
       // script.js
-      zip.file('script.js', source.combinedJs);
+      zip.file('script.js', cleanJs);
 
       // Individual CSS files inside css/ folder
       if (source.cssFiles.length > 0) {
         const cssFolder = zip.folder('css');
         source.cssFiles.forEach(f => {
-          cssFolder?.file(f.filename, f.content);
+          cssFolder?.file(f.filename, formatCode(f.content, 'css'));
         });
       }
 
@@ -99,7 +114,7 @@ export const CodeViewer: React.FC<CodeViewerProps> = ({ source }) => {
       if (source.jsFiles.length > 0) {
         const jsFolder = zip.folder('js');
         source.jsFiles.forEach(f => {
-          jsFolder?.file(f.filename, f.content);
+          jsFolder?.file(f.filename, formatCode(f.content, 'javascript'));
         });
       }
 
@@ -261,30 +276,47 @@ Extracted by MaxSource App
 
         </div>
 
-        {/* Code Editor Toolbar Actions (Copy, Download, Wrap) */}
+        {/* Code Editor Toolbar Actions (Format, Wrap, Copy, Download) */}
         {['html', 'css', 'js'].includes(activeTab) && (
           <div className="flex items-center space-x-2 text-xs">
+            {/* Format Toggle */}
+            <button
+              onClick={() => setIsFormatted(!isFormatted)}
+              className={`px-2 py-1.5 rounded border flex items-center space-x-1 transition-colors ${
+                isFormatted 
+                  ? 'bg-purple-950 border-purple-600 text-purple-300' 
+                  : 'bg-zinc-950 border-purple-900/40 text-zinc-400 hover:text-zinc-200'
+              }`}
+              title={isFormatted ? 'Format Rapi (Aktif)' : 'Kode Asli (Tanpa Format)'}
+            >
+              <Wand2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{isFormatted ? 'Rapi' : 'Asli'}</span>
+            </button>
+
+            {/* Word Wrap Toggle */}
             <button
               onClick={() => setIsWordWrap(!isWordWrap)}
-              className={`p-1.5 rounded border ${
+              className={`p-1.5 rounded border transition-colors ${
                 isWordWrap 
-                  ? 'bg-purple-950 border-purple-700 text-purple-300' 
-                  : 'bg-zinc-950 border-purple-900/40 text-zinc-400'
+                  ? 'bg-purple-950 border-purple-600 text-purple-300' 
+                  : 'bg-zinc-950 border-purple-900/40 text-zinc-400 hover:text-zinc-200'
               }`}
-              title="Toggle Word Wrap"
+              title="Bungkus Baris (Word Wrap)"
             >
               <WrapText className="w-3.5 h-3.5" />
             </button>
 
+            {/* Copy Button */}
             <button
               onClick={copyCode}
               className="px-2.5 py-1.5 bg-zinc-950 hover:bg-purple-950 text-zinc-200 border border-purple-900/50 rounded flex items-center space-x-1 transition-colors cursor-pointer"
-              title="Copy Source Code"
+              title="Salin Kode"
             >
               {isCopied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5 text-purple-400" />}
               <span>{isCopied ? 'Tersalin!' : 'Copy Code'}</span>
             </button>
 
+            {/* Download Single File */}
             <button
               onClick={downloadSingleFile}
               className="px-2.5 py-1.5 bg-purple-950 hover:bg-purple-900 text-purple-200 border border-purple-700/60 rounded flex items-center space-x-1 transition-colors cursor-pointer"
@@ -363,15 +395,22 @@ Extracted by MaxSource App
 
       {/* Code Editor View Container */}
       {['html', 'css', 'js'].includes(activeTab) && (
-        <div className="relative bg-zinc-950 font-mono text-[12px] overflow-auto h-[600px] py-4">
-          {lines.map((line, i) => (
-            <div key={i} className="flex">
-              <div className="select-none px-3 bg-zinc-900/80 border-r border-purple-900/30 text-zinc-600 text-right min-w-[50px] shrink-0 font-mono text-[11px] leading-relaxed">
+        <div className="relative bg-[#0d0d11] font-mono text-[12px] overflow-auto h-[600px] py-3">
+          {highlightedLines.map((lineHtml, i) => (
+            <div key={i} className="flex hover:bg-white/[0.02] transition-colors group">
+              {/* Line Number */}
+              <div className="select-none px-3 bg-zinc-950/60 border-r border-purple-900/30 text-zinc-600 group-hover:text-zinc-400 text-right min-w-[48px] shrink-0 font-mono text-[11px] leading-relaxed">
                 {i + 1}
               </div>
-              <div className={`px-4 flex-1 text-purple-100 leading-relaxed ${isWordWrap ? 'whitespace-pre-wrap break-all' : 'whitespace-pre'}`}>
-                {line || ' '}
-              </div>
+              {/* Code Line with Syntax Highlighting and Clean Word Break */}
+              <div 
+                className={`pl-3 pr-4 flex-1 leading-relaxed ${
+                  isWordWrap 
+                    ? 'whitespace-pre-wrap [overflow-wrap:anywhere] [word-break:normal]' 
+                    : 'whitespace-pre'
+                }`}
+                dangerouslySetInnerHTML={{ __html: lineHtml || '&nbsp;' }}
+              />
             </div>
           ))}
         </div>
